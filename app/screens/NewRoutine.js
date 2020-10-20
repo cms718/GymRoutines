@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-community/async-storage";
 import {
   StyleSheet,
   SafeAreaView,
@@ -14,7 +15,8 @@ import {
   TouchableOpacity,
 } from "react-native-gesture-handler";
 
-import ExerciseList from "../components/renderExercises";
+import ExerciseList from "../components/ExerciseList";
+import saveRoutine from "../components/saveRoutine";
 
 export const exerciseList = [
   {
@@ -26,6 +28,7 @@ export const exerciseList = [
       {
         num: 1,
         previous: "",
+        weight: "",
         reps: "",
         id: 1.1,
       },
@@ -40,6 +43,7 @@ export const exerciseList = [
       {
         num: 1,
         previous: "",
+        weight: "",
         reps: "",
         id: 2.1,
       },
@@ -54,26 +58,51 @@ export const exerciseList = [
       {
         num: 1,
         previous: "",
+        weight: "",
         reps: "",
         id: 3.1,
       },
     ],
   },
 ];
-const Routines = [];
 
-export default function NewRoutine({ navigation }) {
+export default function NewRoutine({ navigation, route }) {
   //save button - nav from stackscreen components
-  React.useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => <Button onPress={() => {}} title="Save" />,
-    });
-  }, [navigation, routineExercises]);
-
   const [exercisesVisible, setExercisesVisible] = useState(false);
   const [exercisesSelected, setExercisesSelected] = useState([]);
   const [routineExercises, setRoutineExercises] = useState([]);
-  const [saving, setSaving] = useState([]);
+  const [note, setNote] = useState("Set Notes");
+  const [name, setName] = useState("Routine Name");
+  const [isWorkingOut, setIsWorkingOut] = useState(false);
+
+  const routineData = route.params;
+
+  {
+    routineData &&
+      useEffect(() => {
+        setName(routineData.name);
+        setNote(routineData.note);
+        setRoutineExercises(routineData.routine);
+        setIsWorkingOut(true);
+      });
+  }
+
+  {
+    !routineData &&
+      React.useLayoutEffect(() => {
+        navigation.setOptions({
+          headerRight: () => (
+            <Button
+              onPress={async () => {
+                await saveRoutine(name, note, routineExercises);
+                navigation.navigate("My Routines");
+              }}
+              title="Save"
+            />
+          ),
+        });
+      }, [navigation, name, note, routineExercises]);
+  }
 
   const Item = ({ item, onPress, style }) => (
     <TouchableOpacity onPress={onPress} style={[styles.item, style]}>
@@ -141,6 +170,7 @@ export default function NewRoutine({ navigation }) {
       id: newId,
       num: newNum,
       previous: "",
+      weight: "",
       reps: "",
     };
     newExercises[exerciseIndex].sets.push(newSet);
@@ -148,21 +178,38 @@ export default function NewRoutine({ navigation }) {
   };
   return (
     <View style={styles.container}>
-      <TextInput style={styles.textinput}>Routine Name</TextInput>
-      <TextInput style={(styles.textinput, { fontSize: 12 })}>
-        Notes to self
-      </TextInput>
+      <TextInput
+        style={styles.textinput}
+        value={name}
+        onChangeText={(text) => setName(text)}
+      />
+      <TextInput
+        style={(styles.textinput, { fontSize: 12 }, { padding: 12 })}
+        value={note}
+        onChangeText={(text) => setNote(text)}
+      />
       <ExerciseList
         exercises={routineExercises}
         onRemoveSet={handleRemove}
         onAddSet={handleAdd}
+        isWorkingOut={isWorkingOut}
       />
-      <Button
-        title="Add Exercise"
-        onPress={() => {
-          setExercisesVisible(true);
-        }}
-      />
+      {!routineData && (
+        <Button
+          title="Add Exercise"
+          onPress={() => {
+            setExercisesVisible(true);
+          }}
+        />
+      )}
+      {routineData && (
+        <Button
+          title="Finish Workout"
+          onPress={() => {
+            console.log(routineData);
+          }}
+        />
+      )}
       <Modal
         animationType="slide"
         transparent={true}

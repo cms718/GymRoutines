@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,21 +7,23 @@ import {
   TouchableOpacity,
   FlatList,
   SafeAreaView,
+  Button,
 } from "react-native";
 
 export default function ExerciseList(props) {
-  const { exercises, onRemoveSet, onAddSet } = props;
-  // const exercises = data;
+  const { exercises, onRemoveSet, onAddSet, isWorkingOut } = props;
+  // exercises is = to the object routine with e
   const Item = ({ name, sets, index }) => (
     <View>
       <View>
-        <Text>{name}</Text>
+        <Text style={{ fontSize: 16, paddingBottom: 10 }}>{name}</Text>
       </View>
       <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
         <Text>Set</Text>
         <Text>Last Time</Text>
         <Text>Kg</Text>
         <Text>Reps</Text>
+        {isWorkingOut && <Text> Done? </Text>}
       </View>
       <FlatList
         data={sets}
@@ -32,14 +34,22 @@ export default function ExerciseList(props) {
             >
               <Text>{item.num}</Text>
               <Text>---</Text>
+              {/* make TextInputs = to value stored in item.reps & item.weight */}
               <TextInput style={styles.inputBox} />
               <TextInput style={styles.inputBox} />
+              {isWorkingOut && (
+                <TouchableOpacity>
+                  <Text> ▢ </Text>
+                </TouchableOpacity>
+              )}
             </View>
           );
         }}
         keyExtractor={(item) => `${item.id}`}
       />
-      <View style={{ flexDirection: "row", justifyContent: "center" }}>
+      <View
+        style={{ flexDirection: "row", justifyContent: "center", padding: 12 }}
+      >
         <TouchableOpacity
           style={styles.changeSets}
           onPress={() => {

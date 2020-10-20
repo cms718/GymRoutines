@@ -16,7 +16,6 @@ const ProfileStack = createStackNavigator();
 const MyRoutinesStack = createStackNavigator();
 const HistoryStack = createStackNavigator();
 const SettingsStack = createStackNavigator();
-const NewRoutineStack = createStackNavigator();
 
 const Tab = createBottomTabNavigator();
 
@@ -31,7 +30,7 @@ function ProfileStackScreen() {
 function MyRoutinesStackScreen() {
   return (
     <MyRoutinesStack.Navigator>
-      <MyRoutinesStack.Screen name="Routines" component={MyRoutines} />
+      <MyRoutinesStack.Screen name="My Routines" component={MyRoutines} />
       <MyRoutinesStack.Screen
         name="New Routine"
         component={NewRoutine}
@@ -63,7 +62,7 @@ export default function App() {
       {signedIn ? (
         <Tab.Navigator>
           <Tab.Screen name="Profile" component={ProfileStackScreen} />
-          <Tab.Screen name="Routines" component={MyRoutinesStackScreen} />
+          <Tab.Screen name="My Routines" component={MyRoutinesStackScreen} />
           <Tab.Screen name="History" component={HistoryStackScreen} />
           <Tab.Screen name="Settings" component={SettingsStackScreen} />
         </Tab.Navigator>
